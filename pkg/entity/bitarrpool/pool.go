@@ -8,7 +8,7 @@ import (
 )
 
 type bitarrpool struct {
-	componentBucketCount int64
+	componentBucketCount int
 	entities             []bitarrview
 	table                componentTable
 }
@@ -16,9 +16,9 @@ type bitarrpool struct {
 var _ entity.Pool = (*bitarrpool)(nil)
 var _ entity.View = (*bitarrview)(nil)
 
-func New(maxComponentId int64) *bitarrpool {
+func New(maxComponentId int) *bitarrpool {
 	var b bitarrpool
-	b.componentBucketCount = bitset.Buckets(maxComponentId)
+	b.componentBucketCount = maxComponentId / implBitSize()
 	b.entities = make([]bitarrview, 1, 128)
 	(&b.table).init()
 	return &b
@@ -31,7 +31,7 @@ func (p bitarrpool) String() string {
 func (p *bitarrpool) Create() (entity.View, error) {
 	var view bitarrview
 	view.id = entity.Model(len(p.entities))
-	view.comps = bitset.New(p.componentBucketCount)
+	view.comps = newSet(p.componentBucketCount)
 	view.p = p
 	p.entities = append(p.entities, view)
 	return view, nil
@@ -39,8 +39,8 @@ func (p *bitarrpool) Create() (entity.View, error) {
 
 // return a subset of the population that matches the provided selectors
 func (p *bitarrpool) Query(qs []entity.Selector) ([]entity.View, error) {
-	includeMask := bitset.New(p.componentBucketCount)
-	excludeMask := bitset.New(p.componentBucketCount)
+	includeMask := newSet(p.componentBucketCount)
+	excludeMask := newSet(p.componentBucketCount)
 	for _, q := range qs {
 		component := q.Component()
 		id, ok := p.table.idType(component)
@@ -49,15 +49,15 @@ func (p *bitarrpool) Query(qs []entity.Selector) ([]entity.View, error) {
 		}
 		switch q.Behavior() {
 		case entity.ComponentInclude:
-			includeMask.Set(int64(id))
+			includeMask.Set(int(id))
 			break
 		case entity.ComponentExclude:
-			excludeMask.Set(int64(id))
+			excludeMask.Set(int(id))
 			break
 		}
 	}
 
-	if bitset.IsEmpty(includeMask) && bitset.IsEmpty(excludeMask) {
+	if bitset.IsFieldEmpty(includeMask) && bitset.IsFieldEmpty(excludeMask) {
 		// empty bitmask will never select anything
 		return nil, entity.ErrNoEntities
 	}
@@ -87,7 +87,7 @@ func (p *bitarrpool) addCompToEnt(b bitarrview, c entity.Component) error {
 	row := p.table.rowFor(c)
 	row.set(b.Model(), c)
 	id, _ := p.table.idValue(c)
-	b.comps.Set(int64(id))
+	b.comps.Set(int(id))
 	return nil
 }
 
@@ -98,6 +98,6 @@ func (p *bitarrpool) removeCompFromEnt(b bitarrview, c entity.Component) error {
 	}
 	row := p.table.row(id)
 	row.unset(b.Model())
-	b.comps.Clear(int64(id))
+	b.comps.Clear(int(id))
 	return nil
 }

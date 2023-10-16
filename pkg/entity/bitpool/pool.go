@@ -58,7 +58,7 @@ func (b *bitpool) Query(qs []entity.Selector) ([]entity.View, error) {
 			panic(fmt.Errorf("unknown behavior %q", &behavior))
 		}
 
-		if bitset.IsEmpty(subset) {
+		if bitset.IsFieldEmpty(subset) {
 			return nil, ErrNoEntities
 		}
 	}

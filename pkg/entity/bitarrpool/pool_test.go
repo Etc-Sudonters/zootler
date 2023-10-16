@@ -219,7 +219,7 @@ func TestCanExcludeEntitiesBasedOnComponent(t *testing.T) {
 	componentsToMake := 1001
 	firstTagRatio := 7
 	secondTagRatio := 5
-	p := New(int64(componentsToMake))
+	p := New(int(componentsToMake))
 
 	totalEnts := set.New[entity.Model]()
 	firstTagEnts := set.New[entity.Model]()

@@ -2,21 +2,20 @@ package bitarrpool
 
 import (
 	"fmt"
-	"sudonters/zootler/internal/bitset"
 	"sudonters/zootler/pkg/entity"
 )
 
 type bitarrview struct {
 	id    entity.Model
-	comps bitset.Bitset64
+	comps implSet
 	p     *bitarrpool
 }
 
-func (v bitarrview) mask(m bitset.Bitset64) bitset.Bitset64 {
+func (v bitarrview) mask(m implSet) implSet {
 	return m.Intersect(v.comps)
 }
 
-func (v bitarrview) isFullyMasked(mask bitset.Bitset64) bool {
+func (v bitarrview) isFullyMasked(mask implSet) bool {
 	return v.mask(mask).Eq(mask)
 }
 

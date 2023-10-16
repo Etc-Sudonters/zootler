@@ -6,11 +6,6 @@ import (
 	"sudonters/zootler/internal/bag"
 )
 
-func Saturated(k int64) Bitset64 {
-	b := New(k)
-	return b.Complement()
-}
-
 func IsEmpty(b Bitset64) bool {
 	for i := range b.bs {
 		if b.bs[i] != 0 {

@@ -5,7 +5,7 @@ import (
 	"sudonters/zootler/pkg/entity"
 )
 
-type componentId int64
+type componentId int
 
 const (
 	INVALID_COMPONENT componentId  = 0

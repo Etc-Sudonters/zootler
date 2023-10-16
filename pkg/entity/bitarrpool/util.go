@@ -3,8 +3,20 @@ package bitarrpool
 import (
 	"fmt"
 	"reflect"
+	"sudonters/zootler/internal/bitset"
 	"sudonters/zootler/pkg/entity"
 )
+
+type implSize = uint64
+type implSet = bitset.BitSet[implSize]
+
+func newSet(k int) implSet {
+	return bitset.WithBuckets[implSize](k)
+}
+
+func implBitSize() int {
+	return bitset.FieldSize[implSize]()
+}
 
 func getComponenter(b bitarrview) func(reflect.Type) (entity.Component, error) {
 	return func(t reflect.Type) (entity.Component, error) {
@@ -13,7 +25,7 @@ func getComponenter(b bitarrview) func(reflect.Type) (entity.Component, error) {
 			return nil, entity.ErrUnknownComponent{Type: t}
 		}
 
-		if !b.comps.Test(int64(id)) {
+		if !b.comps.Test(int(id)) {
 			return nil, entity.ErrNotAssigned
 		}
 

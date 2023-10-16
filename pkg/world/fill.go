@@ -47,7 +47,7 @@ func (a *AssumedFill) Fill(ctx context.Context, w World, g Goal) error {
 	}
 
 	filt = make([]entity.Selector, len(a.Items)+1)
-	filt[0] = entity.With[logic.Item]{}
+	filt[0] = entity.With[logic.Token]{}
 	copy(filt[1:], a.Items)
 	items, err = w.Entities.Pool.Query(filt)
 	if err != nil {
