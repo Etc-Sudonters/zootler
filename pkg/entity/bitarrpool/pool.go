@@ -18,7 +18,7 @@ var _ entity.View = (*bitarrview)(nil)
 
 func New(maxComponentId int) *bitarrpool {
 	var b bitarrpool
-	b.componentBucketCount = maxComponentId / implBitSize()
+	b.componentBucketCount = bitset.BucketsNeeded[implSize](maxComponentId)
 	b.entities = make([]bitarrview, 1, 128)
 	(&b.table).init()
 	return &b
